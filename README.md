@@ -6,10 +6,10 @@ convexity analysis under rate shocks — built to demonstrate **negative
 convexity**, the defining risk characteristic of MBS, using real
 historical mortgage rate data.
 
-<img width="1350" height="900" alt="convexity_chart" src="https://github.com/user-attachments/assets/ef27abb7-b7a0-416e-89f3-b419db42d9ba" />
+<img width="1350" height="900" alt="convexity_chart" src="https://github.com/user-attachments/assets/24c15567-d587-4a35-9c53-46cb3f9926a6" />
+
 
 ## Why this project
-
 
 Fixed income and structured credit desks care about prepayment risk more
 than almost anything else in the mortgage market — it's the reason MBS
@@ -34,6 +34,7 @@ convexity as both a number and a chart.
 | `historical_backtest.py` | Projects a pool's cash flows against **actual historical mortgage rates**, showing prepayment speed respond in real time to real rate moves. |
 | `pricing.py` | Prices the pool under parallel rate shocks and computes effective duration and effective convexity. |
 | `convexity_chart.py` | Generates the headline chart: the pool's price/yield curve against a hypothetical option-free bond with identical but *fixed* cash flows. |
+| `cmo_waterfall.py` | Splits the pool's cash flows into a sequential-pay A/B/Z tranche structure, demonstrating subordination mechanics on top of the same underlying collateral. |
 
 ## Key results
 
@@ -60,6 +61,21 @@ shows the same thing visually: the MBS price curve (blue) tracks the
 option-free bond (gray dashed) closely near the current rate, then bends
 away and flattens as rates fall further, because prepayments accelerate
 and cap the price.
+
+**Sequential-pay tranching** on the same $500M pool (165% PSA) splits one
+blended 6.09-year WAL into three very different tranches from a 70/20/10
+A/B/Z structure:
+
+| Tranche | Original Balance | WAL (years) |
+|---|---|---|
+| A | $350,000,000 | 4.40 |
+| B | $100,000,000 | 9.37 |
+| Z | $50,000,000 | 11.30 |
+
+Same collateral, same cash flows — but sequential pay creates a short,
+lower-duration tranche and a long, more prepayment-exposed one, which is
+the basic mechanism behind subordination in every real-world CMO and
+private credit structure.
 
 ## Important caveat
 
@@ -91,6 +107,7 @@ python3 refi_curve.py            # S-curve shape and burnout demo
 python3 historical_backtest.py   # cash flows against real 2020-2026 rate history
 python3 pricing.py               # duration/convexity under rate shocks
 python3 convexity_chart.py       # generates convexity_chart.png
+python3 cmo_waterfall.py         # sequential-pay A/B/Z tranche split
 ```
 
 `fred_data.py` tries to pull live data from FRED first and only falls
@@ -106,8 +123,6 @@ https://fred.stlouisfed.org/series/MORTGAGE30US
 
 ## Possible extensions
 
-- A sequential-pay CMO tranche waterfall (A/B/Z structure), to
-  demonstrate subordination mechanics on top of the existing cash flows.
 - Calibrating the refi S-curve against public loan-level GSE performance
   data instead of illustrative parameters.
 - OAS (option-adjusted spread) calculation via Monte Carlo rate paths
